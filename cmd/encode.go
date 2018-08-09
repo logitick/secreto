@@ -5,8 +5,14 @@ import (
 	"io/ioutil"
 
 	"github.com/logitick/secreto/secreto"
+	"github.com/logitick/secreto/translate"
+
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
+)
+
+var (
+	encoder = new(translate.Base64)
 )
 
 var cmdEncode = &cobra.Command{
@@ -26,12 +32,10 @@ var cmdEncode = &cobra.Command{
 		if err != nil {
 			panic(errors.New("Cannot parse yaml: " + path))
 		}
-		println(s.Kind)
-		println(s.Version)
 		for k, v := range s.Data {
 			println(k, v)
+			println(k, encoder.Translate(v))
 		}
-
 	},
 }
 
