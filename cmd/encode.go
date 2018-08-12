@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/logitick/secreto/secreto"
@@ -32,10 +33,29 @@ var cmdEncode = &cobra.Command{
 		if err != nil {
 			panic(errors.New("Cannot parse yaml: " + path))
 		}
-		for k, v := range s.Data {
-			println(k, v)
-			println(k, encoder.Translate(v))
+		if s.Version != "v1" {
+			panic(errors.New("Invalid manifest version. Expected v2 got " + s.Version))
 		}
+		if s.Kind != "Secret" {
+			panic(errors.New("Invalid manifest kind. Expected secret got " + s.Kind))
+		}
+
+		m := make(map[string]interface{})
+		err = yaml.Unmarshal(bytes, m)
+
+		dm := make(map[string]interface{}) // data map
+		for k, v := range s.Data {
+			dm[k] = encoder.Translate(v)
+		}
+		m["data"] = dm
+
+		out, err := yaml.Marshal(m)
+		if err != nil {
+			panic(err)
+		}
+		oyaml := string(out)
+
+		fmt.Println(oyaml)
 	},
 }
 
