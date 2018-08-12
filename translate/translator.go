@@ -6,8 +6,18 @@ type Translator interface {
 	Translate(s string) string
 }
 
-type Base64 struct{}
+type TextToBase64 struct{}
 
-func (b64 *Base64) Translate(s string) string {
+func (b64 *TextToBase64) Translate(s string) string {
 	return base64.StdEncoding.EncodeToString([]byte(s))
+}
+
+type Base64ToText struct{}
+
+func (t *Base64ToText) Translate(s string) string {
+	decoded, err := base64.StdEncoding.DecodeString(s)
+	if err != nil {
+		panic(err)
+	}
+	return string(decoded)
 }
