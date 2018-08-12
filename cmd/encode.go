@@ -3,7 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/logitick/secreto/secreto"
 	"github.com/logitick/secreto/translate"
@@ -24,28 +24,33 @@ var cmdEncode = &cobra.Command{
 		if err != nil {
 			panic(errors.New("Path is not specified"))
 		}
-		bytes, err := ioutil.ReadFile(path)
-		if err != nil {
-			panic(errors.New("cannot read file: " + path))
-		}
-		s := new(secreto.Secret)
-		err = yaml.Unmarshal(bytes, s)
-		if err != nil {
-			panic(errors.New("Cannot parse yaml: " + path))
-		}
-		if s.Version != "v1" {
-			panic(errors.New("Invalid manifest version. Expected v2 got " + s.Version))
-		}
-		if s.Kind != "Secret" {
-			panic(errors.New("Invalid manifest kind. Expected secret got " + s.Kind))
-		}
 
-		m := make(map[string]interface{})
-		err = yaml.Unmarshal(bytes, m)
+		reader, err := os.Open(path)
+		if err != nil {
+			panic(err)
+		}
+		defer reader.Close()
+
+		s, b, err := secreto.Read(reader)
+		if err != nil {
+			panic(err)
+		}
 
 		dm := make(map[string]interface{}) // data map
 		for k, v := range s.Data {
 			dm[k] = encoder.Translate(v)
+		}
+
+		// create a map represenation of the secrets file
+		// because secreto.Secrets only holds the data needed
+		// to be validated and translated. If that were to
+		// be unmarshalled to yaml, the user would lose the other
+		// properties defined in the manifest that isn't in
+		// the Secrets struct
+		m := make(map[string]interface{})
+		err = secreto.ReadBytes(b, m)
+		if err != nil {
+			panic(err)
 		}
 		m["data"] = dm
 
