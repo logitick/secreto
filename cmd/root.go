@@ -23,5 +23,6 @@ func init() {
 	Commands = append(Commands,
 		cmdVersion,
 		newEncodeCmd(),
+		newDecodeCmd(),
 	)
 }
