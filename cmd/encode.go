@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"errors"
 	"os"
 
 	"github.com/logitick/secreto/secreto"
@@ -17,13 +16,9 @@ var (
 var cmdEncode = &cobra.Command{
 	Use:   "encode [path to secrets.yml]",
 	Short: "Encodes the literal values in a secrets file to base64", Long: `print is for printing anything back to the screen. For many years people have printed back to the screen.`,
+	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		path, err := cmd.Flags().GetString("file")
-		if err != nil {
-			panic(errors.New("Path is not specified"))
-		}
-
-		reader, err := os.Open(path)
+		reader, err := os.Open(args[0])
 		if err != nil {
 			panic(err)
 		}
@@ -45,7 +40,5 @@ var cmdEncode = &cobra.Command{
 }
 
 func newEncodeCmd() *cobra.Command {
-	cmdEncode.Flags().StringP("file", "f", "", "the path to the secrets manifest")
-	cmdEncode.MarkFlagRequired("file")
 	return cmdEncode
 }
