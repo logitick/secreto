@@ -2,14 +2,12 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
 	"os"
 
 	"github.com/logitick/secreto/secreto"
 	"github.com/logitick/secreto/translate"
 
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -31,36 +29,18 @@ var cmdEncode = &cobra.Command{
 		}
 		defer reader.Close()
 
-		s, b, err := secreto.Read(reader)
+		s, err := secreto.Read(reader)
 		if err != nil {
 			panic(err)
 		}
 
-		dm := make(map[string]interface{}) // data map
+		// data map - as in a map of the data values from the yaml
+		dm := make(map[string]string)
 		for k, v := range s.Data {
 			dm[k] = encoder.Translate(v)
 		}
-
-		// create a map represenation of the secrets file
-		// because secreto.Secrets only holds the data needed
-		// to be validated and translated. If that were to
-		// be unmarshalled to yaml, the user would lose the other
-		// properties defined in the manifest that isn't in
-		// the Secrets struct
-		m := make(map[string]interface{})
-		err = secreto.ReadBytes(b, m)
-		if err != nil {
-			panic(err)
-		}
-		m["data"] = dm
-
-		out, err := yaml.Marshal(m)
-		if err != nil {
-			panic(err)
-		}
-		oyaml := string(out)
-
-		fmt.Println(oyaml)
+		reader.Seek(0, 0)
+		secreto.Write(reader, dm)
 	},
 }
 
