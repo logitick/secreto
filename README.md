@@ -15,8 +15,8 @@ metadata:
   name: database-secret-config
 type: Opaque
 data:
-  username: bGV0bWVpbgo=
-  password: cGFzc3dvcmQxMjMK
+  username: QXp1cmVEaWFtb25k
+  password: aHVudGVyMg==
 ```  
 </details>
 
@@ -28,8 +28,8 @@ metadata:
   name: database-secret-config
 type: Opaque
 data:
-  username: letmein
-  password: password123
+  username: AzureDiamond
+  password: hunter2
 
 # save to a file
 $ secreto decode ./encoded_secrets.yml > secrets.yml
@@ -46,8 +46,8 @@ metadata:
   name: database-secret-config
 type: Opaque
 data:
-  username: letmein
-  password: password123
+  username: AzureDiamond
+  password: hunter2
 ```  
 </details>
 
@@ -59,8 +59,8 @@ metadata:
   name: database-secret-config
 type: Opaque
 data:
-  username: bGV0bWVpbgo=
-  password: cGFzc3dvcmQxMjMK
+  username: QXp1cmVEaWFtb25k
+  password: aHVudGVyMg==
 ```
 
 ## Roadmap
