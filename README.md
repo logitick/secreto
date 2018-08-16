@@ -1,4 +1,4 @@
-# secreto
+# secreto [![Build Status](https://travis-ci.org/logitick/secreto.svg?branch=master)](https://travis-ci.org/logitick/secreto)
 a cli tool to encode and decode kubernetes secrets
 
 
