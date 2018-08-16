@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	encoder = new(translate.Base64)
+	encoder = new(translate.TextToBase64)
+	decoder = new(translate.Base64ToText)
 )
 
 var cmdEncode = &cobra.Command{

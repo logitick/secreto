@@ -18,7 +18,6 @@ func ValidateSecret(s *Secret) (err error) {
 	return nil
 }
 
-// Read creates a Secret from a reader
 func Read(r io.Reader) (*Secret, error) {
 	b, err := ioutil.ReadAll(r)
 	if err != nil {
@@ -29,7 +28,6 @@ func Read(r io.Reader) (*Secret, error) {
 	return s, err
 }
 
-// ReadFromBytes creates a Secret from a byte slice
 func ReadFromBytes(b []byte) (*Secret, error) {
 	s := new(Secret)
 	err := yaml.Unmarshal(b, s)
@@ -43,7 +41,6 @@ func ReadFromBytes(b []byte) (*Secret, error) {
 	return s, nil
 }
 
-// ReadBytes unmashals a yaml
 func ReadBytes(b []byte, out interface{}) error {
 	err := yaml.Unmarshal(b, out)
 	if err != nil {
