@@ -1,4 +1,10 @@
 language: go
-
 go:
-- "1.10.x"
+- 1.10.x
+deploy:
+  provider: releases
+  api_key:
+    secure: g1n3TGfh/qxIUNyaMMO7yg1IF/wknnjmMt1h39HVDwlllViikseU6UrYj9e7IjIMHRGmp3QEucg8jOg7UHXgFfrZpTFLHGaTJrkP93vicNqbmA1G/c3UmbHali6Ft+GQPS9+6qCXYS1lpAhzWBIPz/gEmZDGtio1PMPmOG9pzgigICEu97aUy6QXQaj2VSdZpEbq4/yuR6S6uP5Zaqk1V4rXpl9wxqLgDM9+tYKfz7UPecmSsI+vtIUTX2g9MZG+exKd6X/Fa+no8ToQcDejjvRXhJ8/xn7XCwU11+dV93hRYSHzN4G0aaQJdbkCBJCNcXStG775TtAIvsQsPBMSiejDrL1oz/rRrXMf72W1zkZYm2M0dxbokFIBXItc8vS0VkDulfnnQBZtw/FwfvanGyKXWH8Bxi/x0vsXohtImvVsENqIeqcZOaAXuqcy/hdHGLhCjdWPlR62VDPTGkE8209xghgXOdg7K5CvKPkUSQFNlRX5FKQF7K9LhxdEfP6QB8G9noXDcStdVOrFrlvBRG+d7JB1/nq1dZgCpY/Ic5n8zK1HZpWHiqNDXu71mPXqvkD7euKZmM+VMoL5q0qB5/ssWhVqyaOuetVxvVjtEiViYl/KytoAF3N9OCpoFNq02fXPrxI1F5w74pafE719FyxwOSHpAxdUe9nlclBhwK4=
+  file: ''
+  on:
+    repo: logitick/secreto
