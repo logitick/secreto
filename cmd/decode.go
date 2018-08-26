@@ -4,13 +4,13 @@ import (
 	"os"
 
 	"github.com/logitick/secreto/secreto"
-	"github.com/logitick/secreto/translate"
+	"github.com/logitick/secreto/translate/base64"
 
 	"github.com/spf13/cobra"
 )
 
 var (
-	decoder = new(translate.Base64ToText)
+	decoder = new(base64.Base64ToText)
 )
 
 var cmdDecode = &cobra.Command{

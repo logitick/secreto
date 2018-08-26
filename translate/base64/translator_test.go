@@ -1,4 +1,4 @@
-package translate
+package base64
 
 import "testing"
 
