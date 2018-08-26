@@ -10,13 +10,34 @@ import (
 )
 
 var (
-	decoder = new(base64.Base64ToText)
+	decoder         = new(base64.Base64ToText)
+	decoderlongDesc = `
+Converts the base64 encoded values in a secrets file to plain text
+e.g.
+	apiVersion: v1
+	data:
+	  password: aHVudGVyMg==
+	  username: QXp1cmVEaWFtb25k
+	kind: Secret
+	metadata:
+	name: database-secret-config
+	type: Opaque
+Becomes:
+	apiVersion: v1
+	data:
+	  password: hunter2
+	  username: AzureDiamond
+	kind: Secret
+	metadata:
+	name: database-secret-config
+	type: Opaque`
 )
 
 var cmdDecode = &cobra.Command{
 	Use:   "decode [path to secrets.yml]",
-	Short: "Encodes the literal values in a secrets file to base64", Long: `print is for printing anything back to the screen. For many years people have printed back to the screen.`,
-	Args: cobra.MinimumNArgs(1),
+	Short: "Decodes the base64 encoded values in a secrets file to plain text",
+	Long:  decoderlongDesc,
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		reader, err := os.Open(args[0])
 		if err != nil {
