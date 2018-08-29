@@ -31,10 +31,22 @@ docker: build
 	$(MAKE) clean
 
 clean:
+	@rm -rf release
 	@rm -f $(TARGET)
 
 install:
 	@go install $(LDFLAGS)
+
+fetch:
+	go get \
+	github.com/mitchellh/gox \
+	github.com/inconshreveable/mousetrap # for windows build
+
+release: fetch
+	gox -verbose \
+	-osarch="windows/amd64 linux/amd64 darwin/amd64" \
+	-ldflags "-X main.version=${VERSION}" \
+-output="release/{{.Dir}}-${VERSION}-{{.OS}}-{{.Arch}}" .
 
 uninstall: clean
 	@rm -f $$(which ${TARGET})
