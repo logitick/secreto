@@ -18,7 +18,8 @@ SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 .PHONY: all build docker clean install uninstall fmt simplify check run
 
-all: check install
+#all: check install
+all: test release
 
 $(TARGET): $(SRC)
 	@go build $(LDFLAGS) -o $(TARGET)
