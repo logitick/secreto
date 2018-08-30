@@ -26,6 +26,9 @@ $(TARGET): $(SRC)
 build: $(TARGET)
 	@true
 
+test:
+	@go test ./...
+
 docker: build
 	@docker build -t secreto:latest --build-arg bin="$(TARGET)" .
 	$(MAKE) clean
