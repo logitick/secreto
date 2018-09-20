@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/hex"
 	"os"
 
 	"github.com/logitick/secreto/secreto"
@@ -31,8 +30,11 @@ var cmdEncrypt = &cobra.Command{
 			panic(err)
 		}
 
-		bSliceKey, _ := hex.DecodeString(key)
-		encrypter := aes.NewAesTranslator(bSliceKey)
+		//bSliceKey, _ := hex.DecodeString(key)
+		encrypter, err := aes.NewAesTranslator(key)
+		if err != nil {
+			panic(err)
+		}
 
 		s, err := secreto.Read(reader)
 		if err != nil {

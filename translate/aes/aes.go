@@ -1,6 +1,7 @@
 package aes
 
 import (
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
@@ -8,7 +9,7 @@ import (
 )
 
 type TextToAes struct {
-	Key []byte
+	key []byte
 }
 
 type AesToText struct {
@@ -20,9 +21,13 @@ func NewAesToTextTranslator(key []byte) *AesToText {
 	return decrypter
 }
 
-func NewAesTranslator(key []byte) *TextToAes {
-	encrypter := &TextToAes{key}
-	return encrypter
+func NewAesTranslator(key string) (*TextToAes, error) {
+	src := []byte(key)
+	padding := aes.BlockSize - len(src)%aes.BlockSize
+	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
+	src = append(src, padtext...)
+	encrypter := &TextToAes{src}
+	return encrypter, nil
 }
 
 func AesDecrypt(plaintext string, key string) string {
@@ -33,7 +38,7 @@ func AesDecrypt(plaintext string, key string) string {
 }
 
 func (t *TextToAes) Translate(s string) string {
-	block, err := aes.NewCipher(t.Key)
+	block, err := aes.NewCipher(t.key)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -41,7 +46,7 @@ func (t *TextToAes) Translate(s string) string {
 	// Never use more than 2^32 random nonces with a given key because of the risk of a repeat.
 	nonce := make([]byte, 12)
 
-	copy(nonce, t.Key[:12])
+	copy(nonce, t.key[:12])
 	aesgcm, err := cipher.NewGCM(block)
 
 	if err != nil {
