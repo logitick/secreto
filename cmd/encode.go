@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"os"
+	"fmt"
 
 	"github.com/logitick/secreto/secreto"
 	"github.com/logitick/secreto/translate"
@@ -18,24 +18,26 @@ var cmdEncode = &cobra.Command{
 	Short: "Encodes the literal values in a secrets file to base64", Long: `print is for printing anything back to the screen. For many years people have printed back to the screen.`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		reader, err := os.Open(args[0])
+		b, err := secreto.ReadFile(args[0])
 		if err != nil {
 			panic(err)
 		}
-		defer reader.Close()
-
-		s, err := secreto.Read(reader)
+		s, kr, err := secreto.GetResourceFromType(b)
+		if err != nil {
+			panic(err)
+		}
+		err = secreto.ReadBytes(b, s)
 		if err != nil {
 			panic(err)
 		}
 
-		// data map - as in a map of the data values from the yaml
-		dm := make(map[string]string)
-		for k, v := range s.Data {
-			dm[k] = encoder.Translate(v)
-		}
-		reader.Seek(0, 0)
-		secreto.Write(reader, dm)
+		ttr := new(translate.TextToBase64)
+
+		ktr := translate.GetKubeTranslator(*kr)
+		ktr.Subject = s
+		s = ktr.Translate(ttr)
+
+		panic(fmt.Errorf("%v", s))
 	},
 }
 

@@ -2,35 +2,52 @@ package secreto
 
 import (
 	"errors"
-	"io"
+	"fmt"
 	"io/ioutil"
+	"os"
 
 	yaml "gopkg.in/yaml.v2"
 )
 
-func ValidateSecret(s *Secret) (err error) {
-	if s.Version != "v1" {
-		return errors.New("Invalid manifest version. Expected v2 got " + s.Version)
+func ReadFile(path string) ([]byte, error) {
+	reader, err := os.Open(path)
+	if err != nil {
+		panic(err)
 	}
-	if s.Kind != "Secret" {
-		return errors.New("Invalid manifest kind. Expected secret got " + s.Kind)
+	defer reader.Close()
+	b, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, fmt.Errorf("ReadFile: could not read bytes: %v", err)
+	}
+	return b, nil
+}
+
+func ReadBytes(b []byte, out interface{}) error {
+	err := yaml.Unmarshal(b, out)
+	if err != nil {
+		return fmt.Errorf("ReadBytes: cannot Unmarshal: %v", err)
 	}
 	return nil
 }
 
-func Read(r io.Reader) (*Secret, error) {
-	b, err := ioutil.ReadAll(r)
+func GetResourceFromType(data []byte) (interface{}, *KubeResource, error) {
+	kr := new(KubeResource)
+	err := ReadBytes(data, kr)
 	if err != nil {
-		return nil, err
+		return nil, nil, fmt.Errorf("Cannot determine type: %v", err)
 	}
-
-	s, err := ReadFromBytes(b)
-	return s, err
+	switch kr.Kind {
+	case "Secret":
+		return new(Secret), kr, nil
+	case "List":
+		return new(List), kr, nil
+	}
+	return nil, nil, fmt.Errorf("Cannot get resource of unknown type: %s", kr.Kind)
 }
 
-func ReadFromBytes(b []byte) (*Secret, error) {
+func ReadSecret(data []byte) (*Secret, error) {
 	s := new(Secret)
-	err := yaml.Unmarshal(b, s)
+	err := ReadBytes(data, s)
 	if err != nil {
 		return s, err
 	}
@@ -41,10 +58,25 @@ func ReadFromBytes(b []byte) (*Secret, error) {
 	return s, nil
 }
 
-func ReadBytes(b []byte, out interface{}) error {
-	err := yaml.Unmarshal(b, out)
+func ValidateSecret(s *Secret) (err error) {
+	if s.Kind != "Secret" {
+		return errors.New("Invalid manifest kind. Expected secret got " + s.Kind)
+	}
+	return nil
+}
+
+func ReadList(data []byte) (*List, error) {
+	l := new(List)
+	err := ReadBytes(data, l)
 	if err != nil {
-		return err
+		return l, err
+	}
+	return l, err
+}
+
+func ValidateList(l *List) error {
+	if l.Kind != "List" {
+		return errors.New("Invalid manifest kind. Expected List got " + l.Kind)
 	}
 	return nil
 }

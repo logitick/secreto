@@ -2,7 +2,7 @@ package translate
 
 import "encoding/base64"
 
-type Translator interface {
+type TextTranslator interface {
 	Translate(s string) string
 }
 
