@@ -29,7 +29,7 @@ type List struct {
 	Kind string `json:"kind"`
 
 	// these are the only data that will be translated
-	Items []Secret `json:"items"`
+	Items []*Secret `json:"items"`
 }
 
 func (l *List) DataMap() map[string]SecretValue {

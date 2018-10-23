@@ -1,25 +1,28 @@
 package translate
 
 import (
-	"reflect"
 	"testing"
+
 	s "github.com/logitick/secreto/secreto"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetKubeTranslator(t *testing.T) {
 	tests := []struct {
 		name string
-		arg s.KubeResource
-		want reflect.Type
+		arg  interface{}
+		want KubeTranslator
+		err  error
 	}{
-		{name: "Secret type gets SecretTranslator", arg: s.KubeResource{Kind:"Secret"}, want: reflect.TypeOf(&SecretTranslator{})},
-		{name: "Unkown type gets nil", arg: s.KubeResource{Kind:"Deployment"}, want: nil},
+		{name: "Secret type gets SecretTranslator and nil error", arg: new(s.Secret), want: &SecretTranslator{}, err: nil},
+		{name: "List type gets ListTranslator and nil error", arg: new(s.List), want: &ListTranslator{}, err: nil},
+		{name: "Unkown type gets nil with error", arg: s.KubeResource{Kind: "Deployment"}, want: nil, err: &MissingTranlatorError{}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetKubeTranslator(tt.arg); reflect.TypeOf(got) != tt.want {
-				t.Errorf("GetKubeTranslator() = got %v, want %v", reflect.TypeOf(got), tt.want)
-			}
+			got, err := GetKubeTranslator(tt.arg)
+			assert.IsType(t, tt.want, got)
+			assert.IsType(t, tt.err, err)
 		})
 	}
 }

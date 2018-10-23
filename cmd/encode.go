@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/logitick/secreto/secreto"
 	"github.com/logitick/secreto/translate"
 
@@ -22,7 +20,7 @@ var cmdEncode = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
-		s, kr, err := secreto.GetResourceFromType(b)
+		s, _, err := secreto.GetResourceFromType(b)
 		if err != nil {
 			panic(err)
 		}
@@ -33,11 +31,12 @@ var cmdEncode = &cobra.Command{
 
 		ttr := new(translate.TextToBase64)
 
-		ktr := translate.GetKubeTranslator(*kr)
-		ktr.Subject = s
+		ktr, err := translate.GetKubeTranslator(s)
+		if err != nil {
+			panic(err)
+		}
 		s = ktr.Translate(ttr)
-
-		panic(fmt.Errorf("%v", s))
+		secreto.Out(s)
 	},
 }
 
