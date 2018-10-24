@@ -24,10 +24,6 @@ var cmdEncode = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
-		err = secreto.ReadBytes(b, s)
-		if err != nil {
-			panic(err)
-		}
 
 		ttr := new(translate.TextToBase64)
 

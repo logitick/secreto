@@ -38,9 +38,11 @@ func GetResourceFromType(data []byte) (interface{}, *KubeResource, error) {
 	}
 	switch kr.Kind {
 	case "Secret":
-		return new(Secret), kr, nil
+		s, err := ReadSecret(data)
+		return s, kr, err
 	case "List":
-		return new(List), kr, nil
+		l, err := ReadList(data)
+		return l, kr, err
 	}
 	return nil, nil, fmt.Errorf("Cannot get resource of unknown type: %s", kr.Kind)
 }
@@ -51,6 +53,7 @@ func ReadSecret(data []byte) (*Secret, error) {
 	if err != nil {
 		return s, err
 	}
+	s.bytes = data
 	err = ValidateSecret(s)
 	if err != nil {
 		return s, err
@@ -71,6 +74,7 @@ func ReadList(data []byte) (*List, error) {
 	if err != nil {
 		return l, err
 	}
+	l.bytes = data
 	return l, err
 }
 

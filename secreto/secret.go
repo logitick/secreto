@@ -17,7 +17,8 @@ type Secret struct {
 	// these fields are needed to validate the manifest
 	Kind string `json:"kind"`
 	// these are the only data that will be translated
-	Data map[string]SecretValue `json:"data"`
+	Data  map[string]SecretValue `json:"data"`
+	bytes []byte
 }
 
 func (s *Secret) DataMap() map[string]SecretValue {
@@ -30,6 +31,7 @@ type List struct {
 
 	// these are the only data that will be translated
 	Items []*Secret `json:"items"`
+	bytes []byte
 }
 
 func (l *List) DataMap() map[string]SecretValue {
