@@ -27,7 +27,7 @@ $(TARGET): $(SRC)
 build: $(TARGET)
 	@true
 
-test:
+test: deps
 	@go test ./...
 
 docker: build
