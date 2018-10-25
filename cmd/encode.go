@@ -25,13 +25,11 @@ var cmdEncode = &cobra.Command{
 			panic(err)
 		}
 
-		ttr := new(translate.TextToBase64)
-
 		ktr, err := translate.GetKubeTranslator(s)
 		if err != nil {
 			panic(err)
 		}
-		s = ktr.Translate(ttr)
+		s = ktr.Translate(encoder)
 		secreto.Out(s)
 	},
 }
