@@ -2,39 +2,72 @@ package secreto
 
 import (
 	"fmt"
-	"io"
-	"io/ioutil"
+	"reflect"
 
 	yaml "gopkg.in/yaml.v2"
 )
 
-// Write prints the output to stdout
-func Write(r io.Reader, translated map[string]string) error {
-	b, err := ioutil.ReadAll(r)
-	if err != nil {
-		return err
-	}
+func Out(res interface{}) error {
+	return writer(res)
+	// out, err := yaml.Marshal(res)
+	// if err != nil {
+	// 	return fmt.Errorf("Cannot marshal: %v", err)
+	// }
+	// oyaml := string(out)
 
-	// create a map represenation of the secrets file
-	// because secreto.Secrets only holds the data needed
-	// to be validated and translated. If that were to
-	// be unmarshalled to yaml, the user would lose the other
-	// properties defined in the manifest that isn't in
-	// the Secrets struct
-	m := make(map[string]interface{})
-	err = ReadBytes(b, m)
-	if err != nil {
-		panic(err)
-	}
-	m["data"] = translated
+	// fmt.Println(oyaml)
+	// return nil
+}
 
-	out, err := yaml.Marshal(m)
+func writer(r interface{}) error {
+	t := reflect.TypeOf(r)
+	switch t {
+	case reflect.TypeOf(&Secret{}):
+		s, _ := r.(*Secret)
+		return secretWriter(s)
+	case reflect.TypeOf(&List{}):
+		l, _ := r.(*List)
+		return listWriter(l)
+	}
+	return fmt.Errorf("Missing writer")
+}
+
+func secretWriter(s *Secret) error {
+
+	kv := make(map[string]interface{})
+	yaml.Unmarshal(s.bytes, kv)
+	kv["data"] = s.Data
+
+	out, err := yaml.Marshal(kv)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("Cannot marshal: %v", err)
 	}
 	oyaml := string(out)
 
 	fmt.Println(oyaml)
+	return nil
 
+}
+
+func listWriter(l *List) error {
+	kv := make(map[string]interface{})
+	yaml.Unmarshal(l.bytes, kv)
+
+	items := make([]interface{}, len(l.Items))
+
+	for k, v := range kv["items"].([]interface{}) {
+		skv := v.(map[interface{}]interface{})
+		skv["data"] = l.Items[k].Data
+		items[k] = skv
+	}
+	kv["items"] = items
+
+	out, err := yaml.Marshal(kv)
+	if err != nil {
+		return fmt.Errorf("Cannot marshal: %v", err)
+	}
+	oyaml := string(out)
+
+	fmt.Println(oyaml)
 	return nil
 }
