@@ -1,6 +1,8 @@
 language: go
 go:
 - 1.11.x
+script:
+  - env GO111MODULE=on make
 deploy:
   provider: releases
   skip_cleanup: true
