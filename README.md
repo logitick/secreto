@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1ec5b7fde1154cf8be51f634e5782a8d)](https://app.codacy.com/app/paul_38/secreto?utm_source=github.com&utm_medium=referral&utm_content=logitick/secreto&utm_campaign=Badge_Grade_Settings)
 # secreto [![Build Status](https://travis-ci.org/logitick/secreto.svg?branch=master)](https://travis-ci.org/logitick/secreto)
 a cli tool to encode and decode kubernetes secrets
 
