@@ -24,5 +24,7 @@ func init() {
 		cmdVersion,
 		newEncodeCmd(),
 		newDecodeCmd(),
+		newEncryptCmd(),
+		newDecryptCmd(),
 	)
 }
