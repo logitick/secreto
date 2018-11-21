@@ -23,21 +23,31 @@ func TestNewAesTranslator(t *testing.T) {
 	}
 }
 
+type testNonceGenerator struct {
+	n []byte
+}
+
+func (tng testNonceGenerator) nonce() []byte {
+	return tng.n
+}
+
 func TestTextToAes_Translate(t *testing.T) {
+
 	tests := []struct {
 		key       []byte
 		plaintext string
 		want      string
 	}{
-		{[]byte("helloworld123456"), "nonono", "KCR3q7BKOlg/8Feo:yEwJOOlKhvKSvbJ44FpISVKGErPkPQ=="},
-		{[]byte("secret_key$ecure"), "nonono", "KCR3q7BKOlg/8Feo:cYz9VSWCIjzmd0Ci1CZOcxxStpcjiw=="},
-		{[]byte("secret_key$ecure"), "hello there", "KCR3q7BKOlg/8Feo:d4b/ViTNo7gBEUMjLL9YLO/v331Ji3hKKvdY"},
+		{[]byte("helloworld123456"), "nonono", "AAAAAAAAAAAAAAAA:QRM8ozUKp+jif3e5qpZpiRgQXB0CEw=="},
+		{[]byte("secret_key$ecure"), "nonono", "AAAAAAAAAAAAAAAA:RcU6zzwehJosI+JHh6DVDm1BMG49jw=="},
+		{[]byte("secret_key$ecure"), "hello there", "AAAAAAAAAAAAAAAA:Q884zD1RmmWyjt+faMMoQZJdOlqkqD/oo+pc"},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.plaintext, func(t *testing.T) {
 			tta := &TextToAes{
 				key:   tt.key,
-				nonce: new(randomNonce),
+				nonce: testNonceGenerator{n: []byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
 			}
 			if got := tta.Translate(tt.plaintext); got != tt.want {
 				t.Errorf("TextToAes.Translate() = %v, want %v", got, tt.want)
