@@ -64,19 +64,20 @@ func TestAesToText_Translate(t *testing.T) {
 		s string
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   string
+		encryptedString string
+		key             []byte
+		want            string
 	}{
-		// TODO: Add test cases.
+		{"AAAAAAAAAAAAAAAA:QRM8ozUKp+jif3e5qpZpiRgQXB0CEw==", []byte("helloworld123456"), "nonono"},
+		{"AAAAAAAAAAAAAAAA:RcU6zzwehJosI+JHh6DVDm1BMG49jw==", []byte("secret_key$ecure"), "nonono"},
+		{"AAAAAAAAAAAAAAAA:Q884zD1RmmWyjt+faMMoQZJdOlqkqD/oo+pc", []byte("secret_key$ecure"), "hello there"},
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.want, func(t *testing.T) {
 			d := &AesToText{
-				Key: tt.fields.Key,
+				Key: tt.key,
 			}
-			if got := d.Translate(tt.args.s); got != tt.want {
+			if got := d.Translate(tt.encryptedString); got != tt.want {
 				t.Errorf("AesToText.Translate() = %v, want %v", got, tt.want)
 			}
 		})
