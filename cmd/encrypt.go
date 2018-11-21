@@ -35,7 +35,8 @@ var cmdEncrypt = &cobra.Command{
 			panic(err)
 		}
 		s = ktr.Translate(tt)
-		secreto.Out(s)
+		w := secreto.GetWriter("")
+		secreto.Out(s, w)
 	},
 }
 

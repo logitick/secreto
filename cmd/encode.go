@@ -30,7 +30,8 @@ var cmdEncode = &cobra.Command{
 			panic(err)
 		}
 		s = ktr.Translate(encoder)
-		secreto.Out(s)
+		w := secreto.GetWriter("")
+		secreto.Out(s, w)
 	},
 }
 

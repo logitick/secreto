@@ -2,37 +2,41 @@ package secreto
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"reflect"
 
 	yaml "gopkg.in/yaml.v2"
 )
 
-func Out(res interface{}) error {
-	return writer(res)
-	// out, err := yaml.Marshal(res)
-	// if err != nil {
-	// 	return fmt.Errorf("Cannot marshal: %v", err)
-	// }
-	// oyaml := string(out)
+func GetWriter(writer string) io.Writer {
+	var w io.Writer
 
-	// fmt.Println(oyaml)
-	// return nil
+	switch writer {
+	default:
+		w = os.Stdout
+	}
+	return w
 }
 
-func writer(r interface{}) error {
+func Out(res interface{}, w io.Writer) error {
+	return writer(res, w)
+}
+
+func writer(r interface{}, w io.Writer) error {
 	t := reflect.TypeOf(r)
 	switch t {
 	case reflect.TypeOf(&Secret{}):
 		s, _ := r.(*Secret)
-		return secretWriter(s)
+		return secretWriter(s, w)
 	case reflect.TypeOf(&List{}):
 		l, _ := r.(*List)
-		return listWriter(l)
+		return listWriter(l, w)
 	}
 	return fmt.Errorf("Missing writer")
 }
 
-func secretWriter(s *Secret) error {
+func secretWriter(s *Secret, w io.Writer) error {
 
 	kv := make(map[string]interface{})
 	yaml.Unmarshal(s.bytes, kv)
@@ -42,14 +46,11 @@ func secretWriter(s *Secret) error {
 	if err != nil {
 		return fmt.Errorf("Cannot marshal: %v", err)
 	}
-	oyaml := string(out)
-
-	fmt.Println(oyaml)
-	return nil
-
+	_, err = w.Write(out)
+	return err
 }
 
-func listWriter(l *List) error {
+func listWriter(l *List, w io.Writer) error {
 	kv := make(map[string]interface{})
 	yaml.Unmarshal(l.bytes, kv)
 
@@ -66,8 +67,6 @@ func listWriter(l *List) error {
 	if err != nil {
 		return fmt.Errorf("Cannot marshal: %v", err)
 	}
-	oyaml := string(out)
-
-	fmt.Println(oyaml)
-	return nil
+	_, err = w.Write(out)
+	return err
 }

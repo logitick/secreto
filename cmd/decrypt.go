@@ -32,7 +32,8 @@ var cmdDecrypt = &cobra.Command{
 		}
 		tt := translate.NewAesToTextTranslator([]byte(key))
 		s = ktr.Translate(tt)
-		secreto.Out(s)
+		w := secreto.GetWriter("")
+		secreto.Out(s, w)
 	},
 }
 
