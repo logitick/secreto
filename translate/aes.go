@@ -46,9 +46,12 @@ func NewAesToTextTranslator(key string) *AesToText {
 	if strings.HasPrefix(key, "base64:") {
 		src = base64DecodeKey(key[7:]) // strip "base64:"
 	}
-	padding := aes.BlockSize - len(src)%aes.BlockSize
-	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
-	src = append(src, padtext...)
+
+	if len(src)%8 != 0 {
+		padding := aes.BlockSize - len(src)%aes.BlockSize
+		padtext := bytes.Repeat([]byte{byte(padding)}, padding)
+		src = append(src, padtext...)
+	}
 	decrypter := &AesToText{src}
 	return decrypter
 }
@@ -58,9 +61,12 @@ func NewAesTranslator(key string) (*TextToAes, error) {
 	if strings.HasPrefix(key, "base64:") {
 		src = base64DecodeKey(key[7:]) // strip "base64:"
 	}
-	padding := aes.BlockSize - len(src)%aes.BlockSize
-	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
-	src = append(src, padtext...)
+
+	if len(src)%8 != 0 {
+		padding := aes.BlockSize - len(src)%aes.BlockSize
+		padtext := bytes.Repeat([]byte{byte(padding)}, padding)
+		src = append(src, padtext...)
+	}
 	encrypter := &TextToAes{src, new(randomNonce)}
 	return encrypter, nil
 }
