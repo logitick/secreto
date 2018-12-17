@@ -30,6 +30,7 @@ var cmdEncrypt = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
+
 		tt, err := translate.NewAesTranslator(key)
 		if err != nil {
 			panic(err)

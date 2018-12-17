@@ -30,7 +30,7 @@ var cmdDecrypt = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
-		tt := translate.NewAesToTextTranslator([]byte(key))
+		tt := translate.NewAesToTextTranslator(key)
 		s = ktr.Translate(tt)
 		w := secreto.GetWriter("")
 		secreto.Out(s, w)

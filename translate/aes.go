@@ -16,7 +16,7 @@ type TextToAes struct {
 }
 
 type AesToText struct {
-	Key []byte
+	key []byte
 }
 
 type NonceGenerator interface {
@@ -33,8 +33,19 @@ func (ng *randomNonce) nonce() []byte {
 	return nonce
 }
 
-func NewAesToTextTranslator(key []byte) *AesToText {
+func base64DecodeKey(key string) []byte {
+	bkey, err := base64.StdEncoding.DecodeString(key)
+	if err != nil {
+		panic(err)
+	}
+	return bkey
+}
+
+func NewAesToTextTranslator(key string) *AesToText {
 	src := []byte(key)
+	if strings.HasPrefix(key, "base64:") {
+		src = base64DecodeKey(key[7:]) // strip "base64:"
+	}
 	padding := aes.BlockSize - len(src)%aes.BlockSize
 	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
 	src = append(src, padtext...)
@@ -44,6 +55,9 @@ func NewAesToTextTranslator(key []byte) *AesToText {
 
 func NewAesTranslator(key string) (*TextToAes, error) {
 	src := []byte(key)
+	if strings.HasPrefix(key, "base64:") {
+		src = base64DecodeKey(key[7:]) // strip "base64:"
+	}
 	padding := aes.BlockSize - len(src)%aes.BlockSize
 	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
 	src = append(src, padtext...)
@@ -73,7 +87,7 @@ func (d *AesToText) Translate(s string) string {
 	ciphertext, _ := base64.StdEncoding.DecodeString(in[1])
 
 	nonce, _ := base64.StdEncoding.DecodeString(in[0])
-	block, err := aes.NewCipher(d.Key)
+	block, err := aes.NewCipher(d.key)
 	if err != nil {
 		panic(err.Error())
 	}

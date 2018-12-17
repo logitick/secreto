@@ -1,6 +1,10 @@
 package translate
 
 import (
+	"crypto/rand"
+	"encoding/base64"
+	"encoding/hex"
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -75,10 +79,39 @@ func TestAesToText_Translate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.want, func(t *testing.T) {
 			d := &AesToText{
-				Key: tt.key,
+				key: tt.key,
 			}
 			if got := d.Translate(tt.encryptedString); got != tt.want {
 				t.Errorf("AesToText.Translate() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewAesToTextTranslator_decodes_base64_keys(t *testing.T) {
+	token := make([]byte, 48)
+	rand.Read(token)
+	s := fmt.Sprintf("%X", token)
+
+	fmt.Printf("%s", s)
+
+	b := base64.StdEncoding.EncodeToString(token)
+	fmt.Printf("%s", b)
+
+	tests := []struct {
+		key         string
+		bytesString string
+		byteLength  int
+	}{
+		{"base64:Uv38ByGCZU8WP18PmmIdcpVmx00QA3xNe7sEB9HixkmBhVrYaB0NhtHpHgAWeTnL", "52fdfc072182654f163f5f0f9a621d729566c74d10037c4d7bbb0407d1e2c64981855ad8681d0d86d1e91e00167939cb", 48},
+		{"base64:Uv38ByGCZU8WP18PmmIdcg==", "52fdfc072182654f163f5f0f9a621d72", 16},
+		{"base64:Uv38ByGCZU8WP18PmmIdcpVmx00QA3xNe7sEB9Hixkk=", "52fdfc072182654f163f5f0f9a621d729566c74d10037c4d7bbb0407d1e2c649", 32},
+	}
+	for _, tt := range tests {
+		t.Run(tt.key, func(t *testing.T) {
+			want, _ := hex.DecodeString(tt.bytesString)
+			if got := NewAesToTextTranslator(tt.key); !reflect.DeepEqual(got.key[:tt.byteLength], want) { // chop of everything after the key length because they're only padding
+				t.Errorf("NewAesToTextTranslator() = %v, want %v", got.key, want)
 			}
 		})
 	}
