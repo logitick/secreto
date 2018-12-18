@@ -14,7 +14,7 @@ var cmdVersion = &cobra.Command{
 	Short: "show the current version",
 	Long:  `Display the version number of your secreto installation`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Println("0.0.1")
+		cmd.Println("v0.5.0-alpha.3")
 		return
 	},
 }

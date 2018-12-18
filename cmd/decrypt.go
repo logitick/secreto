@@ -9,8 +9,9 @@ import (
 
 var cmdDecrypt = &cobra.Command{
 	Use:   "decrypt [path to secrets.yml]",
-	Short: "Encodes the literal values in a secrets file to base64", Long: `print is for printing anything back to the screen. For many years people have printed back to the screen.`,
-	Args: cobra.MinimumNArgs(1),
+	Short: "Reverses the AES encryption back to its original value.",
+	Long:  `Decrypts the AES encrypted secrets.`,
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		key, err := cmd.Flags().GetString("key")
 		if err != nil {
